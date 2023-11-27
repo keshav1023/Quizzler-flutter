@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quiz_brain.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 
 QuizBrain quizBrain = QuizBrain();
 
@@ -29,6 +30,32 @@ class QuizPage extends StatefulWidget {
 
 class _QuizPageState extends State<QuizPage> {
   List<Icon> scoreKeeper = [];
+
+  void checkAnswer(bool userPickedAnswer) {
+    bool correctAnswer = quizBrain.getCorrectAnswer();
+    setState(() {
+      if (quizBrain.isFinished() == true) {
+        Alert(
+          context: context,
+          title: 'Finished',
+          desc: 'You have reached the end of the quiz.',
+          style: const AlertStyle(
+            titleStyle: TextStyle(fontWeight: FontWeight.bold),
+            descStyle: TextStyle(fontSize: 15),
+          ),
+        ).show();
+        quizBrain.reset();
+        scoreKeeper = [];
+      } else {
+        if (userPickedAnswer == correctAnswer) {
+          scoreKeeper.add(const Icon(Icons.check, color: Colors.green));
+        } else {
+          scoreKeeper.add(const Icon(Icons.close, color: Colors.red));
+        }
+        quizBrain.nextQuestion();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,18 +89,7 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 // The user picked true.
-
-                bool correctAnswer = quizBrain.getCorrectAnswer();
-
-                if (correctAnswer == true) {
-                  print('Correct !!!');
-                } else {
-                  print('Incorrect !!!');
-                }
-
-                setState(() {
-                  quizBrain.nextQuestion();
-                });
+                checkAnswer(true);
               },
               child: Text(
                 'True',
@@ -93,18 +109,7 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 // The user picked false.
-
-                bool correctAnswer = quizBrain.getCorrectAnswer();
-
-                if (correctAnswer == false) {
-                  print('Correct !!!');
-                } else {
-                  print('Incorrect !!!');
-                }
-
-                setState(() {
-                  quizBrain.nextQuestion();
-                });
+                checkAnswer(false);
               },
               child: Text(
                 'False',
